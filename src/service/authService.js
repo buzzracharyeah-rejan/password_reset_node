@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const crypto = require('crypto')
 const userModel = require('../model/user');
 const tokenModel = require('../model/token');
 
@@ -31,25 +32,27 @@ const authService  = {
           createdAt: Date.now()
       }).save(); 
   
-      const link = `${process.env.CLIENT_URI}/resetPassword?resetToken=${resetToken}&userId=${user._id}`
+      const link = `${process.env.CLIENT_URI}/api/v1/resetPassword?resetToken=${resetToken}&userId=${user._id}`
       return link; 
     } catch (error) {
       throw new Error(error);
     }
   }, 
   passwordReset: async(resetToken, userId, password) => {
+    // console.log(resetToken, userId, password)
     try {
         const passwordResetToken = await tokenModel.findOne({userId}); 
         if(!passwordResetToken) throw new Error('invalid or expired password reset token')
-        const isValid = await bcrypt.compare(resetToken, passwordResetToken); 
+        const isValid = await bcrypt.compare(resetToken, passwordResetToken.token); 
         if(!isValid) throw new Error('invalid or expired password reset token')
 
         // hash password
-        const hash = await bcrypt.hash(password, process.env.BCRYPT_SALT)
-        const updatedUser = await userModel.updateOne({_id: user._id}, {$set: {password: hash}}, {new: true})
-
+        const hash = await bcrypt.hash(password, parseInt(process.env.BCRYPT_SALT))
+        const updatedUser = await userModel.updateOne({_id: userId}, {$set: {password: hash}}, {new: true})
+        
         // send email 
         await passwordResetToken.deleteOne();
+        return true
     } catch (error) {
       throw new Error(error)
     }

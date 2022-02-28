@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 3000;
 
 // error handler
 app.use((err, req, res, next) => {
+  console.log(err)
   return res.status(500).json({
     status: 'failed', 
     message: err.message
