@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+require('dotenv').config();
 const { dbService } = require('./db');
 
 const authRoute = require('./routes/authRoute');
-const { response } = require('express');
 const app = express();
 
 // app level middleware

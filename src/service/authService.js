@@ -3,11 +3,11 @@ const userModel = require('../model/user');
 const tokenModel = require('../model/token');
 
 const authService  = {
-  signup: async ({name, email, password}) => {
+  signup: async ({username, email, password}) => {
     try {
       let user = await userModel.findOne({ email});
       if (user) throw new Error('email already exists');
-      user = new userModel({name, email, password})
+      user = new userModel({username, email, password})
       return await user.save(); 
     } catch (error) {
       throw new Error(error)

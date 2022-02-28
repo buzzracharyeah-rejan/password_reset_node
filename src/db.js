@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
 
 const dbService = {
   db_connect: (req, res, next) => {
